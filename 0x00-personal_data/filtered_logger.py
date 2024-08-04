@@ -1,6 +1,7 @@
 #!/usr/bin/env python3
 """This module provides function to filter out sensitive data"""
 
+import logging
 import re
 from typing import List
 
@@ -28,3 +29,22 @@ def filter_datum(
     pattern = re.compile(f"({'|'.join(fields)})=(.*?{separator})")
     filtered = re.sub(pattern, f"\\1={redaction}{separator}", message)
     return filtered
+
+
+class RedactingFormatter(logging.Formatter):
+    """Redacting Formatter class"""
+
+    REDACTION = "***"
+    FORMAT = "[HOLBERTON] %(name)s %(levelname)s %(asctime)-15s: %(message)s"
+    SEPARATOR = ";"
+
+    def __init__(self, fields: List[str]):
+        self.fields: List[str] = fields
+        super(RedactingFormatter, self).__init__(self.FORMAT)
+
+    def format(self, record: logging.LogRecord) -> str:
+        """Format record to redact sensitive data"""
+        msg = filter_datum(self.fields, self.REDACTION, record.msg,
+                           self.SEPARATOR)
+        record.msg = msg
+        return super().format(record)
