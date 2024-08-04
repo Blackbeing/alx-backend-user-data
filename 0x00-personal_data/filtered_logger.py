@@ -76,11 +76,39 @@ def get_logger() -> logging.Logger:
 def get_db() -> mysql.connector.connection.MySQLConnection:
     """Create connection object to mysql db"""
     db_user = os.getenv("PERSONAL_DATA_DB_USERNAME", "root")
-    db_host = os.getenv("PERSONAL_DATA_DB_HOST", "localhost")
+    db_host = os.getenv("PERSONAL_DATA_DB_HOST", "db")
     db_port = 3306
-    db_pass = os.getenv("PERSONAL_DATA_DB_PASSWORD", "")
-    db_name = os.getenv("PERSONAL_DATA_DB_NAME", "")
+    db_pass = os.getenv("PERSONAL_DATA_DB_PASSWORD", "password")
+    db_name = os.getenv("PERSONAL_DATA_DB_NAME", "my_db")
 
-    cnx = mysql.connector.connect(user=db_user, host=db_host, port=db_port,
-                                  password=db_pass, database=db_name)
+    cnx = mysql.connector.connect(
+        user=db_user, host=db_host, port=db_port, password=db_pass,
+        database=db_name
+    )
     return cnx
+
+
+def main() -> None:
+    """
+    Retrieves all users from the database and logs their attributes.
+
+    Args:
+        None
+
+    Returns:
+        None
+
+    """
+    cnx = get_db()
+    logger = get_logger()
+    cursor = cnx.cursor(dictionary=True)
+    query = "select * from users"
+    cursor.execute(query)
+    users = cursor.fetchall()
+    for user in users:
+        att = ";".join([f"{k}={v}" for k, v in user.items()])
+        logger.info(att)
+
+
+if __name__ == "__main__":
+    main()
