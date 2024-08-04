@@ -2,8 +2,12 @@
 """This module provides function to filter out sensitive data"""
 
 import logging
+import os
 import re
 from typing import List
+
+import mysql
+import mysql.connector
 
 PII_FIELDS = (
     "name",
@@ -67,3 +71,16 @@ def get_logger() -> logging.Logger:
     sh.setFormatter(RedactingFormatter(PII_FIELDS))
     logger.addHandler(sh)
     return logger
+
+
+def get_db() -> mysql.connector.connection.MySQLConnection:
+    """Create connection object to mysql db"""
+    db_user = os.getenv("PERSONAL_DATA_DB_USERNAME", "root")
+    db_host = os.getenv("PERSONAL_DATA_DB_HOST", "localhost")
+    db_port = 3306
+    db_pass = os.getenv("PERSONAL_DATA_DB_PASSWORD", "")
+    db_name = os.getenv("PERSONAL_DATA_DB_NAME", "")
+
+    cnx = mysql.connector.connect(user=db_user, host=db_host, port=db_port,
+                                  password=db_pass, database=db_name)
+    return cnx
