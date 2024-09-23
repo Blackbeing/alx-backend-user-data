@@ -1,0 +1,12 @@
+*.DS_Store
+*.pyc
+*.swp
+*.swo
+*.swn
+*.swm
+*.swl
+*.swf
+*.swc
+*.swo
+__pycache__/
+main_*.py
