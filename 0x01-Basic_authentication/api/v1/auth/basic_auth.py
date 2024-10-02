@@ -5,6 +5,7 @@ This module provides basic authentication functions.
 """
 
 from api.v1.auth.auth import Auth
+import base64
 
 
 class BasicAuth(Auth):
@@ -43,7 +44,25 @@ class BasicAuth(Auth):
             return None
         try:
             return base64.b64decode(
-                base64_authorization_header
+                base64_authorization_header, validate=True
             ).decode('utf-8')
         except Exception:
             return None
+
+    def extract_user_credentials(
+            self, decoded_base64_authorization_header: str
+    ) -> (str, str):
+        """
+        Extracts the user credentials from the base64-encoded
+        authorization header.
+
+        Returns (str, str): The email and password, None otherwise.
+        """
+        if not (decoded_base64_authorization_header and isinstance(
+                decoded_base64_authorization_header, str)):
+            return (None, None)
+        if ':' not in decoded_base64_authorization_header:
+            return (None, None)
+        # split on first colon
+        credentials = decoded_base64_authorization_header.split(':', 1)
+        return credentials
