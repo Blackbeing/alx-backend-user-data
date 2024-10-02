@@ -11,4 +11,21 @@ class BasicAuth(Auth):
     """
     A utility class for handling basic authentication functions.
     """
-    pass
+
+    def extract_base64_authorization_header(
+            self, authorization_header: str
+    ) -> str:
+        """
+        Extracts the base64-encoded part of the Authorization
+        header for basic authentication.
+
+        Returns (str): The base64-encoded part of the Authorization
+        header, None otherwise.
+        """
+        if not (authorization_header and isinstance(authorization_header,
+                                                    str)):
+            return None
+        prefix = "Basic "
+        if not authorization_header.startswith(prefix):
+            return None
+        return authorization_header[len(prefix):]
