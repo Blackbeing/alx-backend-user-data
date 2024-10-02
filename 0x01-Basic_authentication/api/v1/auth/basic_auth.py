@@ -29,3 +29,21 @@ class BasicAuth(Auth):
         if not authorization_header.startswith(prefix):
             return None
         return authorization_header[len(prefix):]
+
+    def decode_base64_authorization_header(
+            self, base64_authorization_header: str
+    ) -> str:
+        """
+        Decodes a base64-encoded string.
+
+        Returns (str): The decoded string, None otherwise.
+        """
+        if not (base64_authorization_header and isinstance(
+                base64_authorization_header, str)):
+            return None
+        try:
+            return base64.b64decode(
+                base64_authorization_header
+            ).decode('utf-8')
+        except Exception:
+            return None
